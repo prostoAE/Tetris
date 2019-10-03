@@ -23,8 +23,6 @@ function () {
 
     _defineProperty(this, "lines", 0);
 
-    _defineProperty(this, "level", 0);
-
     _defineProperty(this, "playfield", this.createPlayfield());
 
     _defineProperty(this, "activePiece", this.createPiece());
@@ -149,6 +147,8 @@ function () {
       if (this.hasCollision()) {
         this.activePiece.y -= 1;
         this.lockPiece();
+        var clearedLines = this.clearLines();
+        this.updateScore(clearedLines);
         this.updatePieces();
       }
     }
@@ -223,10 +223,57 @@ function () {
       }
     }
   }, {
+    key: "clearLines",
+    value: function clearLines() {
+      var rows = 20;
+      var colums = 10;
+      var lines = [];
+
+      for (var y = rows - 1; y >= 0; y--) {
+        var numberOfBlocks = 0;
+
+        for (var x = 0; x < colums; x++) {
+          if (this.playfield[y][x]) {
+            numberOfBlocks += 1;
+          }
+        }
+
+        if (numberOfBlocks === 0) {
+          break;
+        } else if (numberOfBlocks < colums) {
+          continue;
+        } else if (numberOfBlocks === colums) {
+          lines.unshift(y);
+        }
+      }
+
+      for (var _i = 0, _lines = lines; _i < _lines.length; _i++) {
+        var index = _lines[_i];
+        this.playfield.splice(index, 1);
+        this.playfield.unshift(new Array(colums).fill(0));
+      }
+
+      return lines.length;
+    }
+  }, {
+    key: "updateScore",
+    value: function updateScore(clearedLines) {
+      if (clearedLines > 0) {
+        this.score += Game.points[clearedLines] * (this.level + 1);
+        this.lines += clearedLines;
+        console.log(this.score, this.lines);
+      }
+    }
+  }, {
     key: "updatePieces",
     value: function updatePieces() {
       this.activePiece = this.nextPiece;
       this.nextPiece = this.createPiece();
+    }
+  }, {
+    key: "level",
+    get: function get() {
+      return Math.floor(this.lines * 0.1);
     }
   }]);
 
@@ -234,3 +281,10 @@ function () {
 }();
 
 exports["default"] = Game;
+
+_defineProperty(Game, "points", {
+  '1': 40,
+  '2': 100,
+  '3': 300,
+  '4': 1200
+});
