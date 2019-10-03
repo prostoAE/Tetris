@@ -13,19 +13,19 @@ document.addEventListener('keydown', event => {
   switch (event.keyCode) {
     case 37: // left arrow
       game.movePieceLeft();
-      view.render(game.getState());
+      view.renderMainScreen(game.getState());
       break;
     case 38: // up aarow
       game.rotatePiece();
-      view.render(game.getState());
+      view.renderMainScreen(game.getState());
       break;
     case 39: // right arrow
       game.movePieceRight();
-      view.render(game.getState());
+      view.renderMainScreen(game.getState());
       break;
     case 40: // down arrow
       game.movePieceDown();
-      view.render(game.getState());
+      view.renderMainScreen(game.getState());
       break;
   }
 });
