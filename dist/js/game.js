@@ -19,15 +19,7 @@ function () {
   function Game() {
     _classCallCheck(this, Game);
 
-    _defineProperty(this, "score", 0);
-
-    _defineProperty(this, "lines", 0);
-
-    _defineProperty(this, "playfield", this.createPlayfield());
-
-    _defineProperty(this, "activePiece", this.createPiece());
-
-    _defineProperty(this, "nextPiece", this.createPiece());
+    this.reset();
   }
 
   _createClass(Game, [{
@@ -60,8 +52,19 @@ function () {
         level: this.level,
         lines: this.lines,
         nextPiece: this.nextPiece,
-        playfield: playfield
+        playfield: playfield,
+        isGameOver: this.topOut
       };
+    }
+  }, {
+    key: "reset",
+    value: function reset() {
+      this.score = 0;
+      this.lines = 0;
+      this.topOut = false;
+      this.playfield = this.createPlayfield();
+      this.activePiece = this.createPiece();
+      this.nextPiece = this.createPiece();
     }
   }, {
     key: "createPlayfield",
@@ -146,6 +149,7 @@ function () {
   }, {
     key: "movePieceDown",
     value: function movePieceDown() {
+      if (this.topOut) return;
       this.activePiece.y += 1;
 
       if (this.hasCollision()) {
@@ -154,6 +158,10 @@ function () {
         var clearedLines = this.clearLines();
         this.updateScore(clearedLines);
         this.updatePieces();
+      }
+
+      if (this.hasCollision()) {
+        this.topOut = true;
       }
     }
   }, {
