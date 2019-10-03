@@ -56,6 +56,10 @@ function () {
       }
 
       return {
+        score: this.score,
+        level: this.level,
+        lines: this.lines,
+        nextPiece: this.nextPiece,
         playfield: playfield
       };
     }
@@ -261,7 +265,6 @@ function () {
       if (clearedLines > 0) {
         this.score += Game.points[clearedLines] * (this.level + 1);
         this.lines += clearedLines;
-        console.log(this.score, this.lines);
       }
     }
   }, {

@@ -26,17 +26,60 @@ function () {
     this.canvas.width = this.width;
     this.canvas.height = this.height;
     this.context = this.canvas.getContext('2d');
-    this.blockWidth = this.width / collums;
-    this.blockHeight = this.height / rows;
+    this.playfieldBorderWidth = 4;
+    this.playfieldX = this.playfieldBorderWidth;
+    this.playfieldY = this.playfieldBorderWidth;
+    this.playfieldWidth = this.width * 2 / 3;
+    this.playfieldHeight = this.height;
+    this.playfieldInnerWidth = this.playfieldWidth - this.playfieldBorderWidth * 2;
+    this.playfieldInnerHeight = this.playfieldHeight - this.playfieldBorderWidth * 2;
+    this.blockWidth = this.playfieldInnerWidth / collums;
+    this.blockHeight = this.playfieldInnerHeight / rows;
+    this.panelX = this.playfieldWidth + 10;
+    this.panelY = 0;
+    this.panelWidth = this.width / 3;
+    this.panelHeight = this.height;
     this.element.appendChild(this.canvas);
   }
 
   _createClass(View, [{
-    key: "render",
-    value: function render(_ref) {
-      var playfield = _ref.playfield;
+    key: "renderMainScreen",
+    value: function renderMainScreen(state) {
       this.clearScreen();
-      this.renderPlayfield(playfield);
+      this.renderPlayfield(state);
+      this.renderPanel(state);
+    }
+  }, {
+    key: "renderStartScreen",
+    value: function renderStartScreen() {
+      this.context.fillStyle = 'white';
+      this.context.font = '18px "Press Start 2P"';
+      this.context.textAlign = 'center';
+      this.context.textBaseline = 'middle';
+      this.context.fillText('Press ENTER  to Start', this.width / 2, this.height / 2);
+    }
+  }, {
+    key: "renderPauseScreen",
+    value: function renderPauseScreen() {
+      this.context.fillStyle = 'rgba(0, 0, 0, 0.75)';
+      this.context.fillRect(0, 0, this.width, this.height);
+      this.context.fillStyle = 'white';
+      this.context.font = '18px "Press Start 2P"';
+      this.context.textAlign = 'center';
+      this.context.textBaseline = 'middle';
+      this.context.fillText('Press ENTER  to Resume', this.width / 2, this.height / 2);
+    }
+  }, {
+    key: "renderEndScreen",
+    value: function renderEndScreen(_ref) {
+      var score = _ref.score;
+      this.clearScreen();
+      this.context.fillStyle = 'white';
+      this.context.font = '18px "Press Start 2P"';
+      this.context.textAlign = 'center';
+      this.context.textBaseline = 'middle';
+      this.context.fillText('GAME OVER', this.width / 2, this.height / 2 - 48);
+      this.context.fillText("Score: ".concat(score), this.width / 2, this.height / 2);
     }
   }, {
     key: "clearScreen",
@@ -45,7 +88,9 @@ function () {
     }
   }, {
     key: "renderPlayfield",
-    value: function renderPlayfield(playfield) {
+    value: function renderPlayfield(_ref2) {
+      var playfield = _ref2.playfield;
+
       for (var y = 0; y < playfield.length; y++) {
         var line = playfield[y];
 
@@ -53,7 +98,37 @@ function () {
           var block = line[x];
 
           if (block) {
-            this.renderBlock(x * this.blockWidth, y * this.blockHeight, this.blockWidth, this.blockHeight, View.colors[block]);
+            this.renderBlock(this.playfieldX + x * this.blockWidth, this.playfieldY + y * this.blockHeight, this.blockWidth, this.blockHeight, View.colors[block]);
+          }
+        }
+      }
+
+      this.context.strokeStyle = 'white';
+      this.context.lineWidth = this.playfieldBorderWidth;
+      this.context.strokeRect(0, 0, this.playfieldWidth, this.playfieldHeight);
+    }
+  }, {
+    key: "renderPanel",
+    value: function renderPanel(_ref3) {
+      var level = _ref3.level,
+          score = _ref3.score,
+          lines = _ref3.lines,
+          nextPiece = _ref3.nextPiece;
+      this.context.textAlign = 'start';
+      this.context.textBaseline = 'top';
+      this.context.fillStyle = 'white';
+      this.context.font = '14px "Press Start 2P"';
+      this.context.fillText("Score: ".concat(score), this.panelX, this.panelY + 0);
+      this.context.fillText("Lines: ".concat(lines), this.panelX, this.panelY + 24);
+      this.context.fillText("Level: ".concat(level), this.panelX, this.panelY + 48);
+      this.context.fillText('Next:', this.panelX, this.panelY + 96);
+
+      for (var y = 0; y < nextPiece.blocks.length; y++) {
+        for (var x = 0; x < nextPiece.blocks[y].length; x++) {
+          var block = nextPiece.blocks[y][x];
+
+          if (block) {
+            this.renderBlock(this.panelX + x * this.blockWidth * 0.5, this.panelY + 100 + y * this.blockHeight * 0.5, this.blockWidth * 0.5, this.blockHeight * 0.5, View.colors[block]);
           }
         }
       }

@@ -37,6 +37,10 @@ export default class Game {
     }
 
     return {
+      score: this.score,
+      level: this.level,
+      lines: this.lines,
+      nextPiece: this.nextPiece,
       playfield
     }
   }
@@ -248,7 +252,6 @@ export default class Game {
     if (clearedLines > 0) {
       this.score += Game.points[clearedLines] * (this.level + 1);
       this.lines += clearedLines;
-      console.log(this.score, this.lines);
     }
   }
 
